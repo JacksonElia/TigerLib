@@ -10,17 +10,21 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class FollowRealTimeTrajectory extends CommandBase {
 
   // To get the x and y positions of where you want to go, you might have to use a subsystem
   private final DriveSubsystem driveSubsystem;
+  private final BooleanSupplier whileHeldButtonBooleanSupplier;
 
-  public FollowRealTimeTrajectory(DriveSubsystem driveSubsystem) {
+  public FollowRealTimeTrajectory(DriveSubsystem driveSubsystem, BooleanSupplier whileHeldButtonBooleanSupplier) {
     this.driveSubsystem = driveSubsystem;
+    this.whileHeldButtonBooleanSupplier = whileHeldButtonBooleanSupplier;
     addRequirements(this.driveSubsystem);
   }
 
@@ -32,36 +36,40 @@ public class FollowRealTimeTrajectory extends CommandBase {
     // X and Y should be in meters
     // You might have to switch the x and y values and make them negative or positive
     // To get these 3 values, you should use the odometry
-    double startX = 0-9;
-    double startY = 0-9;
-    Rotation2d startRotation = new Rotation2d();
+    double startX = driveSubsystem.m_odometry.getPoseMeters().getY();
+    double startY = driveSubsystem.m_odometry.getPoseMeters().getX();
+    Rotation2d startRotation = driveSubsystem.m_odometry.getPoseMeters().getRotation();
     Pose2d start = new Pose2d(startY, startX, startRotation);
 
     // These values should be field relative, if they are robot relative add them to the start values
-    double endX = 0-9;
-    double endY = 0-9;
-    Rotation2d endRotation = new Rotation2d();
+    double endX = driveSubsystem.m_odometry.getPoseMeters().getY();
+    double endY = driveSubsystem.m_odometry.getPoseMeters().getX() + .5;
+    Rotation2d endRotation = driveSubsystem.m_odometry.getPoseMeters().getRotation();
     Pose2d end = new Pose2d(endY, endX, endRotation);
+
+    SmartDashboard.putString("start", start.toString());
+    SmartDashboard.putString("end", end.toString());
+
 
     // If you want any middle waypoints in the trajectory, add them here
     List<Translation2d> middleWaypoints = List.of();
 
     // Set the constants
-    double driveMaxSpeedMetersPerSecond = 0-9;
-    double driveMaxAccelerationMetersPerSecond = 0-9;
-    double wheelBase = 0-9; // Distance between front and back wheels on robot
-    double trackWidth = 0-9; // Distance between centers of right and left wheels on robot
-    double thetaControllerP = 0-9;
-    double thetaControllerI = 0-9; // Can probably be 0
-    double thetaControllerD = 0-9; // Can probably be 0
-    double turnMaxAngularSpeedRadiansPerSecond = 0-9;
-    double turnMaxAngularSpeedRadiansPerSecondSquared = 0-9;
-    double xControllerP = 0-9;
-    double xControllerI = 0-9; // Can probably be 0
-    double xControllerD = 0-9; // Can probably be 0
-    double yControllerP = 0-9;
-    double yControllerI = 0-9; // Can probably be 0
-    double yControllerD = 0-9; // Can probably be 0
+    double driveMaxSpeedMetersPerSecond = 4.5;
+    double driveMaxAccelerationMetersPerSecond = 3.25;
+    double wheelBase = 0.57785; // Distance between front and back wheels on robot
+    double trackWidth = 0.57785; // Distance between centers of right and left wheels on robot
+    double thetaControllerP = 3;
+    double thetaControllerI = 0; // Can probably be 0
+    double thetaControllerD = 0; // Can probably be 0
+    double turnMaxAngularSpeedRadiansPerSecond = Math.PI;
+    double turnMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    double xControllerP = 1.25;
+    double xControllerI = 0; // Can probably be 0
+    double xControllerD = 0; // Can probably be 0
+    double yControllerP = 1.25;
+    double yControllerI = 0; // Can probably be 0
+    double yControllerD = 0; // Can probably be 0
 
     // IMPORTANT: Make sure your driveSubsystem has the methods getPose and setModuleStates
 
@@ -103,7 +111,7 @@ public class FollowRealTimeTrajectory extends CommandBase {
       new PIDController(yControllerP, yControllerI, yControllerD),
       thetaController,
       driveSubsystem::setModuleStates,
-      () -> this.isFinished(),
+      whileHeldButtonBooleanSupplier,
       driveSubsystem
     ).schedule();
 
@@ -113,9 +121,7 @@ public class FollowRealTimeTrajectory extends CommandBase {
   public void execute() {}
 
   @Override
-  public void end(boolean interrupted) {
-    driveSubsystem.drive(0, 0, 0, false);
-  }
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {
