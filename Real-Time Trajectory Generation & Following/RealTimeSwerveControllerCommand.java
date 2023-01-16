@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -172,7 +173,14 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_timer.stop();
-    // TODO: Needs testing for if module states need to be set to zero for the trajectory to end
+    SwerveModuleState[] stoppedModuleStates = {
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState(),
+      new SwerveModuleState()
+    };
+    m_outputModuleStates.accept(stoppedModuleStates);
+
   }
 
   @Override
