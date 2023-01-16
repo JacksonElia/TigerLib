@@ -47,10 +47,6 @@ public class FollowRealTimeTrajectory extends CommandBase {
     Rotation2d endRotation = driveSubsystem.m_odometry.getPoseMeters().getRotation();
     Pose2d end = new Pose2d(endY, endX, endRotation);
 
-    SmartDashboard.putString("start", start.toString());
-    SmartDashboard.putString("end", end.toString());
-
-
     // If you want any middle waypoints in the trajectory, add them here
     List<Translation2d> middleWaypoints = List.of();
 
