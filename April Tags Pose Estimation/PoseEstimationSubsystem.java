@@ -18,6 +18,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -29,7 +30,6 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   private final NetworkTableEntry botPoseNetworkTableEntry;
   private final NetworkTableEntry jsonDumpNetworkTableEntry;
 
-  /* EDIT VALUES BELOW HERE */
   /**
    * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This
    * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then meters.
@@ -41,7 +41,6 @@ public class PoseEstimationSubsystem extends SubsystemBase {
    * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
    */
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-  /* EDIT VALUES ABOVE HERE */
 
   private double lastTimeStampSeconds = 0;
 
@@ -57,7 +56,7 @@ public class PoseEstimationSubsystem extends SubsystemBase {
       visionMeasurementStdDevs
     );
 
-    networkTable = NetworkTableInstance.getDefault().getTable("limelight");
+    networkTable = NetworkTableInstance.getDefault().getTable("limelight-tigers");
     botPoseNetworkTableEntry = networkTable.getEntry("botpose");
     jsonDumpNetworkTableEntry = networkTable.getEntry("json");
   }
@@ -71,22 +70,26 @@ public class PoseEstimationSubsystem extends SubsystemBase {
     double currentTimeStampSeconds = lastTimeStampSeconds;
     // Attempts to get the time stamp for when the robot pose was calculated
     try {
-      JsonNode parent = new ObjectMapper().readTree(jsonDump);
-      double tsValue = parent.path("ts").asDouble();
-      if (tsValue != 0) {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNodeData = mapper.readTree(jsonDump);
+      double tsValue = jsonNodeData.path("Results").path("ts").asDouble();
+      SmartDashboard.putNumber("tsValue", timeStampValue);
+      if (timeStampValue != 0) {
         // Converts from milleseconds to seconds
-        currentTimeStampSeconds = tsValue / 1000;
+        currentTimeStampSeconds = timeStampValue / 1000;
       }
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      SmartDashboard.putString("Json Parsing Error", e.getStackTrace());
     }
 
+    // Updates the pose estimator's position if limelight position data was recieved with a new time stamp
     if (botPose.length != 0 && currentTimeStampSeconds > lastTimeStampSeconds) {
-      double robotX = botPose[0];
-      double robotY = botPose[1];  // TODO: Check if this is the right value
+      double robotX = botPose[0] + 8.28; // TODO: Get precise field measurements
+      double robotY = botPose[1] + 4;
       Rotation2d robotRotation = Rotation2d.fromDegrees(botPose[5]);
       Pose2d limelightVisionMeasurement = new Pose2d(robotX, robotY, robotRotation);
       poseEstimator.addVisionMeasurement(limelightVisionMeasurement, currentTimeStampSeconds);
+      SmartDashboard.putString("Limelight Pose", limelightVisionMeasurement.toString());
     }
 
     lastTimeStampSeconds = currentTimeStampSeconds;
@@ -96,6 +99,12 @@ public class PoseEstimationSubsystem extends SubsystemBase {
       driveSubsystem.getRotation2d(),
       driveSubsystem.getModulePositions()
     );
+
+    // Updates the odometry to the pose estimator's pose
+    driveSubsystem.resetOdometry(getPose());
+
+    SmartDashboard.putString("Estimated Pose", getPose().toString());
+    SmartDashboard.putString("Odometry Pose", driveSubsystem.getPose().toString());
   }
 
   public Pose2d getPose() {
