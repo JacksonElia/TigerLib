@@ -1,8 +1,5 @@
-// This code can be uncommented and used once a DriveSubsystem has been created.
-
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// For this code to work, PathPlannerLib needs to be installed through Gradle
+// https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json
 
 package frc.robot.commands.autonomous;
 
@@ -16,7 +13,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class FollowPathPlannerPath extends CommandBase {
+public class FollowPathPlannerTrajectory extends CommandBase {
 
   private DriveSubsystem driveSubsystem;
   private String filePath;
@@ -26,7 +23,7 @@ public class FollowPathPlannerPath extends CommandBase {
   private boolean done = false;
 
   /** Creates a new FollowTrajectoryPathPlanner. */
-  public FollowPathPlannerPath(DriveSubsystem driveSubsystem, String filePath, boolean zeroInitialPose) {
+  public FollowPathPlannerTrajectory(DriveSubsystem driveSubsystem, String filePath, boolean zeroInitialPose) {
     this.driveSubsystem = driveSubsystem;
     addRequirements(driveSubsystem);
     
