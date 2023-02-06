@@ -1,3 +1,6 @@
+// Some of this code was copied from Team 7028 - Binary Battalion's swerve-test repository
+// https://github.com/STMARobotics/swerve-test/blob/5916bb426b97f10e17d9dfd5ec6c3b6fda49a7ce/src/main/java/frc/robot/subsystems/PoseEstimatorSubsystem.java
+
 package frc.robot.subsystems;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +29,15 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   private final NetworkTableEntry botPoseNetworkTableEntry;
   private final NetworkTableEntry jsonDumpNetworkTableEntry;
 
+  // EDIT CODE BELOW HERE
+  
+  // The length of the field in the x direction (left to right)
+  private static final double fieldLengthMeters = 0-9;
+  // The length of the field in the y direction (top to bottom)
+  private static final double fieldWidthMeters = 0-9;
+  
+  private static final String limelightNetworktableName = "limelight";
+  
   /**
    * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This
    * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then meters.
@@ -37,6 +49,8 @@ public class PoseEstimationSubsystem extends SubsystemBase {
    * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
    */
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+  
+  // EDIT CODE ABOVE HERE
 
   private double lastTimeStampSeconds = 0;
 
@@ -47,12 +61,12 @@ public class PoseEstimationSubsystem extends SubsystemBase {
       DriveConstants.driveKinematics,
       driveSubsystem.getRotation2d(),
       driveSubsystem.getModulePositions(),
-      new Pose2d(),  // FIXME: This is the pose2d for where you start on the field, might need to change
+      new Pose2d(), // This is the position for where the robot starts the match, use setPose() to set it in autonomous init
       stateStdDevs,
       visionMeasurementStdDevs
     );
 
-    networkTable = NetworkTableInstance.getDefault().getTable("limelight-tigers");
+    networkTable = NetworkTableInstance.getDefault().getTable(limelightNetworktableName);
     botPoseNetworkTableEntry = networkTable.getEntry("botpose");
     jsonDumpNetworkTableEntry = networkTable.getEntry("json");
   }
@@ -80,8 +94,8 @@ public class PoseEstimationSubsystem extends SubsystemBase {
 
     // Updates the pose estimator's position if limelight position data was recieved with a new time stamp
     if (botPose.length != 0 && currentTimeStampSeconds > lastTimeStampSeconds) {
-      double robotX = botPose[0] + 8.28; // TODO: Get precise field measurements
-      double robotY = botPose[1] + 4;
+      double robotX = botPose[0] + fieldLengthMeters / 2;
+      double robotY = botPose[1] + fieldWidthMeters / 2;
       Rotation2d robotRotation = Rotation2d.fromDegrees(botPose[5]);
       Pose2d limelightVisionMeasurement = new Pose2d(robotX, robotY, robotRotation);
       poseEstimator.addVisionMeasurement(limelightVisionMeasurement, currentTimeStampSeconds);
@@ -121,7 +135,7 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   }
 
   /**
-   * Resets the position on the field to 0,0 0-degrees, with forward being downfield. 
+   * Resets the position on the field to 0,0, 0-degrees, with forward being downfield. 
    * This resets what "forward" is for field oriented driving.
    */
   public void resetFieldPosition() {
