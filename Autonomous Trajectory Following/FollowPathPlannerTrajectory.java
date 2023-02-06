@@ -16,37 +16,33 @@ import frc.robot.subsystems.DriveSubsystem;
 public class FollowPathPlannerTrajectory extends CommandBase {
 
   private DriveSubsystem driveSubsystem;
-  private String filePath;
-  private boolean zeroInitialPose;
+  private String trajectoryName;
 
   PPSwerveControllerCommand followTrajectoryPathPlannerCommand;
   private boolean done = false;
 
-  /** Creates a new FollowTrajectoryPathPlanner. */
-  public FollowPathPlannerTrajectory(DriveSubsystem driveSubsystem, String filePath, boolean zeroInitialPose) {
+  /**
+   * Follows the specified PathPlanner trajectory.
+   * @param driveSubsystem The subsystem for the swerve drive.
+   * @param trajectoryName The name of the PathPlanner path file. It should not include the filepath or .path extension.
+   */
+  public FollowPathPlannerTrajectory(DriveSubsystem driveSubsystem, String trajectoryName) {
     this.driveSubsystem = driveSubsystem;
     addRequirements(driveSubsystem);
     
-    this.filePath = filePath;
-    this.zeroInitialPose = zeroInitialPose;
+    this.trajectoryName = trajectoryName;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     // Makes a trajectory                                                     
-    PathPlannerTrajectory trajectoryToFollow = PathPlanner.loadPath(filePath, PathPlannerConstants.autoMaxVelocity, PathPlannerConstants.autoMaxAcceleration);
-
-    // Resets the pose of the robot if true
-    if (zeroInitialPose) {
-      driveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose());
-    }
+    PathPlannerTrajectory trajectoryToFollow = PathPlanner.loadPath(trajectoryName, PathPlannerConstants.autoMaxVelocity, PathPlannerConstants.autoMaxAcceleration);
 
     // PID controllers
     PIDController xController = new PIDController(PathPlannerConstants.xControllerP, 0, 0);
     PIDController yController = new PIDController(PathPlannerConstants.yControllerP, 0, 0);
-    /*Profiled*/PIDController thetaController = new PIDController(
-    PathPlannerConstants.thetaControllerP, 0, 0);//, PathPlannerConstants.thetaControllerConstraints);
+    PIDController thetaController = new PIDController(PathPlannerConstants.thetaControllerP, 0, 0);
     thetaController.enableContinuousInput(-Math.PI, Math.PI); // Makes it so wheels don't have to turn more than 90 degrees
 
     // Create a PPSwerveControllerCommand. This is almost identical to WPILib's SwerveControllerCommand, but it uses the holonomic rotation from the PathPlannerTrajectory to control the robot's rotation.
