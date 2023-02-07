@@ -29,7 +29,7 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   private final NetworkTableEntry botPoseNetworkTableEntry;
   private final NetworkTableEntry jsonDumpNetworkTableEntry;
 
-  // EDIT CODE BELOW HERE
+  /* EDIT CODE BELOW HERE */
   
   // The length of the field in the x direction (left to right)
   private static final double fieldLengthMeters = 0-9;
@@ -37,6 +37,15 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   private static final double fieldWidthMeters = 0-9;
   
   private static final String limelightNetworktableName = "limelight";
+  
+  // You should probably have a constant for this
+  private static final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
+                 // wheelBase, trackWidth
+    new Translation2d(0-9 / 2, 0-9 / 2),
+    new Translation2d(0-9 / 2, -0-9 / 2),
+    new Translation2d(-0-9 / 2, 0-9 / 2),
+    new Translation2d(-0-9 / 2, -0-9 / 2)
+  );
   
   /**
    * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This
@@ -50,7 +59,9 @@ public class PoseEstimationSubsystem extends SubsystemBase {
    */
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
   
-  // EDIT CODE ABOVE HERE
+  // IMPORTANT: Make sure your driveSubsystem has the methods getPose, getRotation2d, getModulePositions, and resetOdometry
+  
+  /* EDIT CODE ABOVE HERE */
 
   private double lastTimeStampSeconds = 0;
 
@@ -58,7 +69,7 @@ public class PoseEstimationSubsystem extends SubsystemBase {
     this.driveSubsystem = driveSubsystem;
 
     poseEstimator = new SwerveDrivePoseEstimator(
-      DriveConstants.driveKinematics,
+      driveKinematics,
       driveSubsystem.getRotation2d(),
       driveSubsystem.getModulePositions(),
       new Pose2d(), // This is the position for where the robot starts the match, use setPose() to set it in autonomous init
