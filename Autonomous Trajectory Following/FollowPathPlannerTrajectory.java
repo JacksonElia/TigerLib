@@ -15,11 +15,19 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class FollowPathPlannerTrajectory extends CommandBase {
 
-  private DriveSubsystem driveSubsystem;
-  private String trajectoryName;
-
-  PPSwerveControllerCommand followTrajectoryPathPlannerCommand;
-  private boolean done = false;
+  private final DriveSubsystem driveSubsystem;
+  private final PPSwerveControllerCommand followPathPlannerTrajectoryCommand;
+  private final String trajectoryName;
+  private final boolean done = false;
+  
+  // EDIT CODE BELOW HERE
+  
+  // Your probably on want to edit the P values
+  private final PIDController xController = new PIDController(0-9, 0, 0);
+  private final PIDController yController = new PIDController(0-9, 0, 0);
+  private final PIDController thetaController = new PIDController(0-9, 0, 0);
+  
+  // EDIT CODE ABOVE HERE
 
   /**
    * Follows the specified PathPlanner trajectory.
@@ -39,14 +47,11 @@ public class FollowPathPlannerTrajectory extends CommandBase {
     // Makes a trajectory                                                     
     PathPlannerTrajectory trajectoryToFollow = PathPlanner.loadPath(trajectoryName, PathPlannerConstants.autoMaxVelocity, PathPlannerConstants.autoMaxAcceleration);
 
-    // PID controllers
-    PIDController xController = new PIDController(PathPlannerConstants.xControllerP, 0, 0);
-    PIDController yController = new PIDController(PathPlannerConstants.yControllerP, 0, 0);
-    PIDController thetaController = new PIDController(PathPlannerConstants.thetaControllerP, 0, 0);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI); // Makes it so wheels don't have to turn more than 90 degrees
+    // Makes it so wheels don't have to turn more than 90 degrees
+    thetaController.enableContinuousInput(-Math.PI, Math.PI); 
 
     // Create a PPSwerveControllerCommand. This is almost identical to WPILib's SwerveControllerCommand, but it uses the holonomic rotation from the PathPlannerTrajectory to control the robot's rotation.
-    followTrajectoryPathPlannerCommand = new PPSwerveControllerCommand(
+    followPathPlannerTrajectoryCommand = new PPSwerveControllerCommand(
       trajectoryToFollow,
       driveSubsystem::getPose, // Functional interface to feed supplier
       DriveConstants.driveKinematics,
@@ -58,14 +63,14 @@ public class FollowPathPlannerTrajectory extends CommandBase {
       driveSubsystem
     );
     
-    followTrajectoryPathPlannerCommand.schedule();
+    followPathPlannerTrajectoryCommand.schedule();
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    done = followTrajectoryPathPlannerCommand.isFinished();
+    done = followPathPlannerTrajectoryCommand.isFinished();
   }
 
   // Called once the command ends or is interrupted.
