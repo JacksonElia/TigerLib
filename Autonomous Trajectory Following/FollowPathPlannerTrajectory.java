@@ -8,6 +8,8 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PathPlannerConstants;
@@ -21,8 +23,17 @@ public class FollowPathPlannerTrajectory extends CommandBase {
   private boolean done = false;
   
   // EDIT CODE BELOW HERE
-  
-  // Your probably on want to edit the P values
+  // You should have constants for everything in here
+
+  private final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
+                 // wheelBase, trackWidth
+    new Translation2d(0-9 / 2, 0-9 / 2),
+    new Translation2d(0-9 / 2, -0-9 / 2),
+    new Translation2d(-0-9 / 2, 0-9 / 2),
+    new Translation2d(-0-9 / 2, -0-9 / 2)
+  );
+
+  // Your probably only want to edit the P values
   private final PIDController xController = new PIDController(0-9, 0, 0);
   private final PIDController yController = new PIDController(0-9, 0, 0);
   private final PIDController thetaController = new PIDController(0-9, 0, 0);
@@ -54,7 +65,7 @@ public class FollowPathPlannerTrajectory extends CommandBase {
     followPathPlannerTrajectoryCommand = new PPSwerveControllerCommand(
       trajectoryToFollow,
       driveSubsystem::getPose, // Functional interface to feed supplier
-      DriveConstants.driveKinematics,
+      driveKinematics,
       xController,
       yController,
       thetaController,
