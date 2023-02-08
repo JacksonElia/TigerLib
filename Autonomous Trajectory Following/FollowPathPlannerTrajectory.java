@@ -16,9 +16,9 @@ import frc.robot.subsystems.DriveSubsystem;
 public class FollowPathPlannerTrajectory extends CommandBase {
 
   private final DriveSubsystem driveSubsystem;
-  private final PPSwerveControllerCommand followPathPlannerTrajectoryCommand;
   private final String trajectoryName;
-  private final boolean done = false;
+  private PPSwerveControllerCommand followPathPlannerTrajectoryCommand;
+  private boolean done = false;
   
   // EDIT CODE BELOW HERE
   
