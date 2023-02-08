@@ -12,6 +12,8 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
@@ -19,7 +21,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DriveConstants;
 
 public class PoseEstimationSubsystem extends SubsystemBase {
   
@@ -93,14 +94,14 @@ public class PoseEstimationSubsystem extends SubsystemBase {
     try {
       ObjectMapper mapper = new ObjectMapper();
       JsonNode jsonNodeData = mapper.readTree(jsonDump);
-      double tsValue = jsonNodeData.path("Results").path("ts").asDouble();
+      double timeStampValue = jsonNodeData.path("Results").path("ts").asDouble();
       SmartDashboard.putNumber("tsValue", timeStampValue);
       if (timeStampValue != 0) {
         // Converts from milleseconds to seconds
         currentTimeStampSeconds = timeStampValue / 1000;
       }
     } catch (JsonProcessingException e) {
-      SmartDashboard.putString("Json Parsing Error", e.getStackTrace());
+      SmartDashboard.putString("Json Parsing Error", e.getStackTrace().toString());
     }
 
     // Updates the pose estimator's position if limelight position data was recieved with a new time stamp
