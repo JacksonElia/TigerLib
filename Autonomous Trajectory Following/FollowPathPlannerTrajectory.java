@@ -18,6 +18,7 @@ public class FollowPathPlannerTrajectory extends CommandBase {
 
   private final DriveSubsystem driveSubsystem;
   private final String trajectoryName;
+  private final boolean resetOdometryToTrajectoryStart;
   private PPSwerveControllerCommand followPathPlannerTrajectoryCommand;
   private boolean done = false;
   
@@ -37,18 +38,24 @@ public class FollowPathPlannerTrajectory extends CommandBase {
   private final PIDController yController = new PIDController(0-9, 0, 0);
   private final PIDController thetaController = new PIDController(0-9, 0, 0);
   
+  // IMPORTANT: Make sure your driveSubsystem has the methods resetOdometry, getPose, and setModuleStates
+  
   // EDIT CODE ABOVE HERE
 
   /**
    * Follows the specified PathPlanner trajectory.
    * @param driveSubsystem The subsystem for the swerve drive.
-   * @param trajectoryName The name of the PathPlanner path file. It should not include the filepath or .path extension.
+   * @param trajectoryName The name of the PathPlanner path file. It should not include the filepath or 
+   * .path extension.
+   * @param resetOdometryToTrajectoryStart Set as true if you want the odometry of the robot to be set to the
+   * start of the trajectory.
    */
-  public FollowPathPlannerTrajectory(DriveSubsystem driveSubsystem, String trajectoryName) {
+  public FollowPathPlannerTrajectory(DriveSubsystem driveSubsystem, String trajectoryName, boolean resetOdometryToTrajectoryStart) {
     this.driveSubsystem = driveSubsystem;
     addRequirements(driveSubsystem);
     
     this.trajectoryName = trajectoryName;
+    this.resetOdometryToTrajectoryStart = resetOdometryToTrajectoryStart;
   }
 
   // Called when the command is initially scheduled.
@@ -58,7 +65,11 @@ public class FollowPathPlannerTrajectory extends CommandBase {
     PathPlannerTrajectory trajectoryToFollow = PathPlanner.loadPath(trajectoryName, PathPlannerConstants.autoMaxVelocity, PathPlannerConstants.autoMaxAcceleration);
 
     // Makes it so wheels don't have to turn more than 90 degrees
-    thetaController.enableContinuousInput(-Math.PI, Math.PI); 
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    
+    if (resetOdometryToTrajectoryStart) {
+      driveSubsystem.resetOdometry(trajectoryToFollow.getInitialPose());
+    }
 
     // Create a PPSwerveControllerCommand. This is almost identical to WPILib's SwerveControllerCommand, but it uses the holonomic rotation from the PathPlannerTrajectory to control the robot's rotation.
     followPathPlannerTrajectoryCommand = new PPSwerveControllerCommand(
