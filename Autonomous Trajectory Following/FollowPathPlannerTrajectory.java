@@ -1,3 +1,4 @@
+// JackLib 2023
 // For this code to work, PathPlannerLib needs to be installed through Gradle
 // https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json
 
@@ -22,7 +23,7 @@ public class FollowPathPlannerTrajectory extends CommandBase {
   private PPSwerveControllerCommand followPathPlannerTrajectoryCommand;
   private boolean done = false;
   
-  // EDIT CODE BELOW HERE
+  /* EDIT CODE BELOW HERE */
   // You should have constants for everything in here
 
   private final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
@@ -40,7 +41,7 @@ public class FollowPathPlannerTrajectory extends CommandBase {
   
   // IMPORTANT: Make sure your driveSubsystem has the methods resetOdometry, getPose, and setModuleStates
   
-  // EDIT CODE ABOVE HERE
+  /* DO NOT EDIT CODE BELOW HERE (Unless if you know what you're doing) */
 
   /**
    * Follows the specified PathPlanner trajectory.
