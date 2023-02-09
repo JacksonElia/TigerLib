@@ -33,6 +33,9 @@ public class FollowPathPlannerTrajectory extends CommandBase {
     new Translation2d(-0-9 / 2, 0-9 / 2),
     new Translation2d(-0-9 / 2, -0-9 / 2)
   );
+  
+  private final double autoMaxVelocity = 0-9;
+  private final double autoMaxAcceleration = 0-9;
 
   // Your probably only want to edit the P values
   private final PIDController xController = new PIDController(0-9, 0, 0);
@@ -41,7 +44,7 @@ public class FollowPathPlannerTrajectory extends CommandBase {
   
   // IMPORTANT: Make sure your driveSubsystem has the methods resetOdometry, getPose, and setModuleStates
   
-  /* DO NOT EDIT CODE BELOW HERE (Unless if you know what you're doing) */
+  /* EDIT CODE ABOVE HERE (ONLY TOUCH THE REST OF THE CODE IF YOU KNOW WHAT YOU'RE DOING) */
 
   /**
    * Follows the specified PathPlanner trajectory.
@@ -63,7 +66,7 @@ public class FollowPathPlannerTrajectory extends CommandBase {
   @Override
   public void initialize() {
     // Makes a trajectory                                                     
-    PathPlannerTrajectory trajectoryToFollow = PathPlanner.loadPath(trajectoryName, PathPlannerConstants.autoMaxVelocity, PathPlannerConstants.autoMaxAcceleration);
+    PathPlannerTrajectory trajectoryToFollow = PathPlanner.loadPath(trajectoryName, autoMaxVelocity, autoMaxAcceleration);
 
     // Makes it so wheels don't have to turn more than 90 degrees
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
