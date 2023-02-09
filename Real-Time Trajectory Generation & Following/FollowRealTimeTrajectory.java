@@ -12,7 +12,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.List;
@@ -63,7 +62,10 @@ public class FollowRealTimeTrajectory extends CommandBase {
     // Your probably only want to edit the P values
     PIDController xController = new PIDController(0-9, 0, 0);
     PIDController yController = new PIDController(0-9, 0, 0);
-    PIDController thetaController = new PIDController(0-9, 0, 0);
+    ProfiledPIDController thetaController = new ProfiledPIDController(
+      0-9, 0, 0,
+      new TrapezoidProfile.Constraints(turnMaxAngularSpeedRadiansPerSecond, turnMaxAngularSpeedRadiansPerSecondSquared)
+    );
 
     // IMPORTANT: Make sure your driveSubsystem has the methods getPose and setModuleStates
 
@@ -90,10 +92,6 @@ public class FollowRealTimeTrajectory extends CommandBase {
       new Translation2d(-wheelBase / 2, trackWidth / 2),
       new Translation2d(-wheelBase / 2, -trackWidth / 2));
 
-    final ProfiledPIDController thetaController = new ProfiledPIDController(
-      thetaControllerP, thetaControllerI, thetaControllerD,
-      new TrapezoidProfile.Constraints(turnMaxAngularSpeedRadiansPerSecond, turnMaxAngularSpeedRadiansPerSecondSquared)
-    );
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     new RealTimeSwerveControllerCommand(
@@ -101,8 +99,8 @@ public class FollowRealTimeTrajectory extends CommandBase {
       driveSubsystem::getPose, // Functional interface to feed supplier
       kinematics,
       // Position controllers
-      new PIDController(xControllerP, xControllerI, xControllerD),
-      new PIDController(yControllerP, yControllerI, yControllerD),
+      xController,
+      yController,
       thetaController,
       driveSubsystem::setModuleStates,
       whileHeldButtonBooleanSupplier,
