@@ -1,3 +1,6 @@
+// JackLib 2023
+// Do not edit this code unless you know what you're doing
+
 public final class LinearInterpolator {
 
   private final double[][] lookupTable;
@@ -24,6 +27,7 @@ public final class LinearInterpolator {
         return lookupTable[lookupTable.length - 1][1];
     }
     
+    // Goes through the lookup table and approximates the closest y value by drawing a line between the two closest points
     for(int i = 0; i < lookupTable.length; i++) {
         if (inputXValue == lookupTable[i][0]) {
             return lookupTable[i][1];
