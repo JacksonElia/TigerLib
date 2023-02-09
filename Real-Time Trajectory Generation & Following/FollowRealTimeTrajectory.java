@@ -66,6 +66,13 @@ public class FollowRealTimeTrajectory extends CommandBase {
       0-9, 0, 0,
       new TrapezoidProfile.Constraints(turnMaxAngularSpeedRadiansPerSecond, turnMaxAngularSpeedRadiansPerSecondSquared)
     );
+    
+    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+      new Translation2d(wheelBase / 2, trackWidth / 2),
+      new Translation2d(wheelBase / 2, -trackWidth / 2),
+      new Translation2d(-wheelBase / 2, trackWidth / 2),
+      new Translation2d(-wheelBase / 2, -trackWidth / 2)
+    );
 
     // IMPORTANT: Make sure your driveSubsystem has the methods getPose and setModuleStates
 
@@ -85,12 +92,6 @@ public class FollowRealTimeTrajectory extends CommandBase {
       end,
       config
     );
-
-    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-      new Translation2d(wheelBase / 2, trackWidth / 2),
-      new Translation2d(wheelBase / 2, -trackWidth / 2),
-      new Translation2d(-wheelBase / 2, trackWidth / 2),
-      new Translation2d(-wheelBase / 2, -trackWidth / 2));
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
