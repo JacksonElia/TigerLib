@@ -1,3 +1,4 @@
+// JackLib 2023
 // Some of this code was copied from Team 7028 - Binary Battalion's swerve-test repository
 // https://github.com/STMARobotics/swerve-test/blob/5916bb426b97f10e17d9dfd5ec6c3b6fda49a7ce/src/main/java/frc/robot/subsystems/PoseEstimatorSubsystem.java
 
@@ -62,7 +63,7 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   
   // IMPORTANT: Make sure your driveSubsystem has the methods getPose, getRotation2d, getModulePositions, and resetOdometry
   
-  /* EDIT CODE ABOVE HERE */
+  /* DO NOT EDIT CODE BELOW HERE (Unless if you know what you're doing) */
 
   private double lastTimeStampSeconds = 0;
 
