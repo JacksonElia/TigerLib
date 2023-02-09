@@ -1,3 +1,5 @@
+// JackLib 2023
+
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -35,37 +37,33 @@ public class FollowRealTimeTrajectory extends CommandBase {
 
     // X and Y should be in meters
     // You might have to switch the x and y values and make them negative or positive
-    // To get these 3 values, you should use the odometry
-    double startX = driveSubsystem.m_odometry.getPoseMeters().getY();
-    double startY = driveSubsystem.m_odometry.getPoseMeters().getX();
-    Rotation2d startRotation = driveSubsystem.m_odometry.getPoseMeters().getRotation();
+    // To get these 3 values, you should use the odometry or poseEstimator
+    double startX = driveSubsystem.odometry.getPoseMeters().getY();
+    double startY = driveSubsystem.odometry.getPoseMeters().getX();
+    Rotation2d startRotation = driveSubsystem.odometry.getPoseMeters().getRotation();
     Pose2d start = new Pose2d(startY, startX, startRotation);
 
     // These values should be field relative, if they are robot relative add them to the start values
-    double endX = driveSubsystem.m_odometry.getPoseMeters().getY();
-    double endY = driveSubsystem.m_odometry.getPoseMeters().getX() + .5;
-    Rotation2d endRotation = driveSubsystem.m_odometry.getPoseMeters().getRotation();
+    double endX = driveSubsystem.odometry.getPoseMeters().getY();
+    double endY = driveSubsystem.odometry.getPoseMeters().getX() + .5;
+    Rotation2d endRotation = driveSubsystem.odometry.getPoseMeters().getRotation();
     Pose2d end = new Pose2d(endY, endX, endRotation);
 
     // If you want any middle waypoints in the trajectory, add them here
     List<Translation2d> middleWaypoints = List.of();
 
-    // Set the constants
-    double driveMaxSpeedMetersPerSecond = 4.5;
-    double driveMaxAccelerationMetersPerSecond = 3.25;
-    double wheelBase = 0.57785; // Distance between front and back wheels on robot
-    double trackWidth = 0.57785; // Distance between centers of right and left wheels on robot
-    double thetaControllerP = 3;
-    double thetaControllerI = 0; // Can probably be 0
-    double thetaControllerD = 0; // Can probably be 0
-    double turnMaxAngularSpeedRadiansPerSecond = Math.PI;
-    double turnMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-    double xControllerP = 1.25;
-    double xControllerI = 0; // Can probably be 0
-    double xControllerD = 0; // Can probably be 0
-    double yControllerP = 1.25;
-    double yControllerI = 0; // Can probably be 0
-    double yControllerD = 0; // Can probably be 0
+    // You should have constans or everything below here
+    double driveMaxSpeedMetersPerSecond = 0-9;
+    double driveMaxAccelerationMetersPerSecond = 0-9;
+    double wheelBase = 0-9; // Distance between front and back wheels on robot
+    double trackWidth = 0-9; // Distance between centers of right and left wheels on robot
+    double turnMaxAngularSpeedRadiansPerSecond = 0-9;
+    double turnMaxAngularSpeedRadiansPerSecondSquared = 0-9;
+    
+    // Your probably only want to edit the P values
+    PIDController xController = new PIDController(0-9, 0, 0);
+    PIDController yController = new PIDController(0-9, 0, 0);
+    PIDController thetaController = new PIDController(0-9, 0, 0);
 
     // IMPORTANT: Make sure your driveSubsystem has the methods getPose and setModuleStates
 
