@@ -63,7 +63,7 @@ public class PoseEstimationSubsystem extends SubsystemBase {
   
   // IMPORTANT: Make sure your driveSubsystem has the methods getPose, getRotation2d, getModulePositions, and resetOdometry
   
-  /* DO NOT EDIT CODE BELOW HERE (Unless if you know what you're doing) */
+  /* EDIT CODE ABOVE HERE (ONLY TOUCH THE REST OF THE CODE IF YOU KNOW WHAT YOU'RE DOING) */
 
   private double lastTimeStampSeconds = 0;
 
