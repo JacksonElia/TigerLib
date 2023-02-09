@@ -1,5 +1,7 @@
+// JackLib 2023
 // This command is almost identical to the WPILib SwerveControllerCommand
 // The key difference is that this command can be canceled mid-trajectory
+// Do not touch this unless you know what you're doing.
 
 package frc.robot.commands.autonomous;
 
