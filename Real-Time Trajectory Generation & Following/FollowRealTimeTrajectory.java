@@ -13,6 +13,8 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.TrajectoryConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -37,42 +39,35 @@ public class FollowRealTimeTrajectory extends CommandBase {
     // X and Y should be in meters
     // You might have to switch the x and y values and make them negative or positive
     // To get these 3 values, you should use the odometry or poseEstimator
-    double startX = driveSubsystem.odometry.getPoseMeters().getY();
-    double startY = driveSubsystem.odometry.getPoseMeters().getX();
+    double startX = 0;
+    double startY = 0;
     Rotation2d startRotation = driveSubsystem.odometry.getPoseMeters().getRotation();
-    Pose2d start = new Pose2d(startY, startX, startRotation);
+    Pose2d start = new Pose2d(startX, startY, startRotation);
 
     // These values should be field relative, if they are robot relative add them to the start values
-    double endX = driveSubsystem.odometry.getPoseMeters().getY();
-    double endY = driveSubsystem.odometry.getPoseMeters().getX() + .5;
+    double endX = 1;
+    double endY = 0;
     Rotation2d endRotation = driveSubsystem.odometry.getPoseMeters().getRotation();
-    Pose2d end = new Pose2d(endY, endX, endRotation);
+    Pose2d end = new Pose2d(endX, endY, endRotation);
 
     // If you want any middle waypoints in the trajectory, add them here
     List<Translation2d> middleWaypoints = List.of();
 
     // You should have constans or everything below here
-    double driveMaxSpeedMetersPerSecond = 0-9;
-    double driveMaxAccelerationMetersPerSecond = 0-9;
-    double wheelBase = 0-9; // Distance between front and back wheels on robot
-    double trackWidth = 0-9; // Distance between centers of right and left wheels on robot
-    double turnMaxAngularSpeedRadiansPerSecond = 0-9;
-    double turnMaxAngularSpeedRadiansPerSecondSquared = 0-9;
+    double driveMaxSpeedMetersPerSecond = TrajectoryConstants.autoMaxVelocity;
+    double driveMaxAccelerationMetersPerSecond = TrajectoryConstants.autoMaxAcceleration;
+    double turnMaxAngularSpeedRadiansPerSecond = TrajectoryConstants.maxAngularSpeedRadiansPerSecond;
+    double turnMaxAngularSpeedRadiansPerSecondSquared = TrajectoryConstants.maxAngularSpeedRadiansPerSecondSquared;
     
     // Your probably only want to edit the P values
-    PIDController xController = new PIDController(0-9, 0, 0);
-    PIDController yController = new PIDController(0-9, 0, 0);
+    PIDController xController = new PIDController(TrajectoryConstants.xControllerP, 0, 0);
+    PIDController yController = new PIDController(TrajectoryConstants.yControllerP, 0, 0);
     ProfiledPIDController thetaController = new ProfiledPIDController(
-      0-9, 0, 0,
+      TrajectoryConstants.thetaProfiledControllerP, 0, 0,
       new TrapezoidProfile.Constraints(turnMaxAngularSpeedRadiansPerSecond, turnMaxAngularSpeedRadiansPerSecondSquared)
     );
-    
-    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-      new Translation2d(wheelBase / 2, trackWidth / 2),
-      new Translation2d(wheelBase / 2, -trackWidth / 2),
-      new Translation2d(-wheelBase / 2, trackWidth / 2),
-      new Translation2d(-wheelBase / 2, -trackWidth / 2)
-    );
+
+    SwerveDriveKinematics kinematics = DriveConstants.driveKinematics;
 
     // IMPORTANT: Make sure your driveSubsystem has the methods getPose and setModuleStates
 
@@ -81,10 +76,9 @@ public class FollowRealTimeTrajectory extends CommandBase {
     TrajectoryConfig config = new TrajectoryConfig(
       driveMaxSpeedMetersPerSecond,
       driveMaxAccelerationMetersPerSecond)
-        // Add kinematics to ensure max speed is actually obeyed
-        // .setKinematics(SwerveDriveConstants.kDriveKinematic)
-        .setStartVelocity(0)
-        .setEndVelocity(0);
+      .setKinematics(DriveConstants.driveKinematics)
+      .setStartVelocity(0)
+      .setEndVelocity(0);
 
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       start,
@@ -94,6 +88,8 @@ public class FollowRealTimeTrajectory extends CommandBase {
     );
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    driveSubsystem.resetOdometry(trajectory.getInitialPose());
 
     new RealTimeSwerveControllerCommand(
       trajectory,
