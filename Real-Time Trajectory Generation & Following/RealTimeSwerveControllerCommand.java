@@ -179,7 +179,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
         () ->
             trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation(),
         outputModuleStates,
-        isFinished
+        isFinished,
         requirements);
   }
 
@@ -229,7 +229,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    m_timer.restart();
+    m_timer.reset();
   }
 
   @Override
