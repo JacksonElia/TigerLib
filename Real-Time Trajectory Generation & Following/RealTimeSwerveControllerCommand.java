@@ -3,7 +3,7 @@
 // The key difference is that this command can be canceled mid-trajectory
 // Do not touch this unless you know what you're doing.
 
-package edu.wpi.first.wpilibj2.command;
+package frc.robot.commands.autonomous;
 
 import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
