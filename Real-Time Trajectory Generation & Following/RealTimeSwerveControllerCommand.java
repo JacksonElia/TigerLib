@@ -1,6 +1,6 @@
-// JackLib 2023
-// This command is almost identical to the WPILib SwerveControllerCommand
-// The key difference is that this command can be canceled mid-trajectory
+// JackLib 2023 
+// This command is almost identical to the WPILib SwerveControllerCommand 
+// The key difference is that this command can be canceled mid-trajectory 
 // Do not touch this unless you know what you're doing.
 
 package frc.robot.commands.autonomous;
@@ -65,7 +65,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
    * @param desiredRotation The angle that the drivetrain should be facing. This is sampled at each
    *     time step.
    * @param outputModuleStates The raw output module states from the position controllers.
-   * @param isFinished The boolean supplier for if the parent command is finished.
+   * @param isFinished The Boolean Supplier for if the trajectory should end.
    * @param requirements The subsystems to require.
    */
   public RealTimeSwerveControllerCommand(
@@ -114,7 +114,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
    * @param yController The Trajectory Tracker PID controller for the robot's y position.
    * @param thetaController The Trajectory Tracker PID controller for angle for the robot.
    * @param outputModuleStates The raw output module states from the position controllers.
-   * @param isFinished The boolean supplier for if the parent command is finished.
+   * @param isFinished The Boolean Supplier for if the trajectory should end.
    * @param requirements The subsystems to require.
    */
   public RealTimeSwerveControllerCommand(
@@ -160,7 +160,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
    * @param kinematics The kinematics for the robot drivetrain.
    * @param controller The HolonomicDriveController for the drivetrain.
    * @param outputModuleStates The raw output module states from the position controllers.
-   * @param isFinished The boolean supplier for if the parent command is finished.
+   * @param isFinished The Boolean Supplier for if the trajectory should end.
    * @param requirements The subsystems to require.
    */
   public RealTimeSwerveControllerCommand(
@@ -199,7 +199,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
    * @param desiredRotation The angle that the drivetrain should be facing. This is sampled at each
    *     time step.
    * @param outputModuleStates The raw output module states from the position controllers.
-   * @param isFinished The boolean supplier for if the parent command is finished.
+   * @param isFinished The Boolean Supplier for if the trajectory should end.
    * @param requirements The subsystems to require.
    */
   public RealTimeSwerveControllerCommand(
@@ -221,7 +221,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
 
     m_outputModuleStates =
         requireNonNullParam(outputModuleStates, "outputModuleStates", "RealTimeSwerveControllerCommand");
-        
+
     m_isFinished = requireNonNullParam(isFinished, "isFinished", "RealTimeSwerveControllerCommand");
 
     addRequirements(requirements);
@@ -230,6 +230,7 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
   @Override
   public void initialize() {
     m_timer.reset();
+    m_timer.start();
   }
 
   @Override
@@ -258,6 +259,6 @@ public class RealTimeSwerveControllerCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    // This allows the trajectory to be stopped before it ends
-    return m_isFinished.getAsBoolean();  }
+    return m_isFinished.getAsBoolean() || m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
+  }
 }
