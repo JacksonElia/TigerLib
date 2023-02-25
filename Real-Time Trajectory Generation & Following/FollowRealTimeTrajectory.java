@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.TrajectoryConstants;
@@ -26,7 +27,6 @@ public class FollowRealTimeTrajectory extends CommandBase {
   private final DriveSubsystemImpl driveSubsystem;
   private final boolean resetOdometryToTrajectoryStart;
   private final BooleanSupplier isFinished;
-  private RealTimePPSwerveControllerCommand followPathPlannerTrajectoryCommand;
   
   /**
    * Follows the specified PathPlanner trajectory.
@@ -39,7 +39,6 @@ public class FollowRealTimeTrajectory extends CommandBase {
   public FollowRealTimeTrajectory(DriveSubsystemImpl driveSubsystem, boolean resetOdometryToTrajectoryStart, BooleanSupplier isFinished) {
     this.driveSubsystem = driveSubsystem;
     this.isFinished = isFinished;
-    // addRequirements(driveSubsystem); // TODO See if you need to add this back
     this.resetOdometryToTrajectoryStart = resetOdometryToTrajectoryStart;
   }
 
@@ -67,43 +66,40 @@ public class FollowRealTimeTrajectory extends CommandBase {
 
     SwerveDriveKinematics kinematics = DriveConstants.driveKinematics;
     
-    // Makes a trajectory that factors in holonomic rotation
-    PathPlannerTrajectory trajectoryToFollow = PathPlanner.generatePath(
-      new PathConstraints(TrajectoryConstants.autoMaxVelocity, TrajectoryConstants.autoMaxAcceleration),
-      // position, heading (direction of travel)
-      new PathPoint(start, startRotation, Rotation2d.fromDegrees(0)),
-      // If you want any middle waypoints, add more pathpoints here
-      new PathPoint(end, endRotation, Rotation2d.fromDegrees(0))
-    );                                               
+    // This should be fine, but is here just in case so the robot doesn't crash during a match
+    try {
+      // Makes a trajectory that factors in holonomic rotation
+      PathPlannerTrajectory trajectoryToFollow = PathPlanner.generatePath(
+        new PathConstraints(TrajectoryConstants.autoMaxVelocity, TrajectoryConstants.autoMaxAcceleration),
+        // position, heading (direction of travel)
+        new PathPoint(start, startRotation, Rotation2d.fromDegrees(0)),
+        // If you want any middle waypoints, add more pathpoints here
+        new PathPoint(end, endRotation, Rotation2d.fromDegrees(0))
+      );                                               
 
     // IMPORTANT: Make sure your driveSubsystem has the methods getPose and setModuleStates
 
     /* EDIT CODE ABOVE HERE (ONLY TOUCH THE REST OF THE CODE IF YOU KNOW WHAT YOU'RE DOING) */
 
-    // Makes it so wheels don't have to turn more than 90 degrees
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    
-    if (resetOdometryToTrajectoryStart) {
-      driveSubsystem.resetPoseEstimator(trajectoryToFollow.getInitialPose());
+      // Makes it so wheels don't have to turn more than 90 degrees
+      thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+      new RealTimePPSwerveControllerCommand(
+        trajectoryToFollow,
+        driveSubsystem::getPose, // Functional interface to feed supplier
+        kinematics,
+        xController,
+        yController,
+        thetaController,
+        driveSubsystem::setModuleStates,
+        false,
+        isFinished,
+        new Pose2d(),
+        driveSubsystem
+      ).schedule();
+    } catch(Exception e) {
+      SmartDashboard.putString("Trajectory Error Message", e.getLocalizedMessage());
     }
-
-    // Create a PPSwerveControllerCommand. This is almost identical to WPILib's SwerveControllerCommand, but it uses the holonomic rotation from the PathPlannerTrajectory to control the robot's rotation.
-    followPathPlannerTrajectoryCommand = new RealTimePPSwerveControllerCommand(
-      trajectoryToFollow,
-      driveSubsystem::getPose, // Functional interface to feed supplier
-      kinematics,
-      xController,
-      yController,
-      thetaController,
-      driveSubsystem::setModuleStates,
-      false,
-      isFinished,
-      new Pose2d(),
-      driveSubsystem
-    );
-    
-    followPathPlannerTrajectoryCommand.schedule();
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
