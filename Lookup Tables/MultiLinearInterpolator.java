@@ -1,4 +1,4 @@
-// JackLib 2023
+// TigerLib 2023
 // Don't edit this unless you know what you're doing
 
 import java.util.Arrays;
