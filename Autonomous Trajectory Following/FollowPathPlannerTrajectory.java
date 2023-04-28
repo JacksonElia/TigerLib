@@ -1,4 +1,4 @@
-// JackLib 2023
+// TigerLib 2023
 // For this code to work, PathPlannerLib needs to be installed through Gradle
 // https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json
 
