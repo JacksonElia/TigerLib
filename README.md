@@ -1,4 +1,6 @@
 # TigerLib
+<img src="https://github.com/JacksonElia/TigerLib/assets/85963782/4c976dcb-8c63-46a0-ab9b-80eb4fcd9aa8" alt="tigerliblogo made with fotor.com" width="25%">
+
 
 **CURRENTLY IN PROGRESS**
 
