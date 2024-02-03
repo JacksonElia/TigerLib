@@ -39,7 +39,6 @@ public abstract class DriveCommandBase extends Command {
     // Updates the pose estimator using the swerve modules
     driveSubsystem.addPoseEstimatorSwerveMeasurement();
 
-    // Updates the robot's odometry with april tags
     double currentTimeStampSeconds = lastTimeStampSeconds;
 
     if (visionSubsystem.canSeeAprilTags()) {
@@ -59,6 +58,7 @@ public abstract class DriveCommandBase extends Command {
       // Only updates the pose estimator if the limelight pose is new and reliable
       if (currentTimeStampSeconds > lastTimeStampSeconds && ticksAfterSeeing > VisionConstants.FRAMES_BEFORE_ADDING_VISION_MEASUREMENT) {
         Pose2d limelightVisionMeasurement = visionSubsystem.getPoseFromAprilTags();
+        // Updates the robot's odometry with april tags and accounting for latency
         driveSubsystem.addPoseEstimatorVisionMeasurement(limelightVisionMeasurement, Timer.getFPGATimestamp() - visionSubsystem.getLatencySeconds());
       }
     } else {
