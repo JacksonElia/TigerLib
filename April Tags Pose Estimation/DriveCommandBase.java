@@ -34,6 +34,8 @@ public abstract class DriveCommandBase extends Command {
 
   @Override
   public void execute() {
+    // Don't forget to do super.execute() in the execute of whatever command you have extending this
+    
     // Updates the pose estimator using the swerve modules
     driveSubsystem.addPoseEstimatorSwerveMeasurement();
 
