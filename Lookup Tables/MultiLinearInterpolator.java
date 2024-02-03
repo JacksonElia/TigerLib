@@ -29,7 +29,7 @@ public final class MultiLinearInterpolator {
     }
 
     // Goes through the lookup table and finds the two closet entries that "straddle" inputXValue, then
-    // draws a line through the y values and get the values for them corresponding to inputXValue
+    // draws a line through the y values and gets the values for them corresponding to inputXValue
     for (int i = 0; i < lookupTable.length; i++) {
       if (inputXValue == lookupTable[i][0]) {
         return Arrays.copyOfRange(lookupTable[i], 1, lookupTable[0].length);
