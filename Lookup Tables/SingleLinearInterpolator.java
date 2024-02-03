@@ -1,4 +1,4 @@
-// JackLib 2023
+// JackLib 2024
 // Do not edit this code unless you know what you're doing
 
 public final class SingleLinearInterpolator {
@@ -24,8 +24,10 @@ public final class SingleLinearInterpolator {
     else if (inputXValue > lookupTable[lookupTable.length - 1][0]) {
       return lookupTable[lookupTable.length - 1][1];
     }
-    
-    for(int i = 0; i < lookupTable.length; i++) {
+
+    // Goes through the lookup table and finds the two closet entries that "straddle" inputXValue, then
+    // draws a line through the y value and gets the value corresponding to inputXValue
+    for (int i = 0; i < lookupTable.length; i++) {
       if (inputXValue == lookupTable[i][0]) {
         return lookupTable[i][1];
       } else if (inputXValue > lookupTable[i][0] && inputXValue < lookupTable[i + 1][0]) {
