@@ -1,22 +1,22 @@
-// TigerLib 2023\4
+// TigerLib 2024
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.LimelightConstants;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.extras.MultiLinearInterpolator;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public abstract class DriveCommandBase extends CommandBase {
+public abstract class DriveCommandBase extends Command {
 
   private final MultiLinearInterpolator oneAprilTagLookupTable = 
-    new MultiLinearInterpolator(LimelightConstants.ONE_APRIL_TAG_LOOKUP_TABLE);
+    new MultiLinearInterpolator(VisionConstants.ONE_APRIL_TAG_LOOKUP_TABLE);
   private final MultiLinearInterpolator twoAprilTagLookupTable = 
-    new MultiLinearInterpolator(LimelightConstants.TWO_APRIL_TAG_LOOKUP_TABLE);
+    new MultiLinearInterpolator(VisionConstants.TWO_APRIL_TAG_LOOKUP_TABLE);
 
-  private final DriveSubsystem driveSubsystem;
   private final VisionSubsystem visionSubsystem;
+  private final DriveSubsystem driveSubsystem;
 
   private double lastTimeStampSeconds = 0;
   private int ticksAfterSeeing = 0;
@@ -27,8 +27,9 @@ public abstract class DriveCommandBase extends CommandBase {
    * @param visionSubsystem The subsystem for vision measurements
    */
   public DriveCommandBase(DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
-    this.driveSubsystem = driveSubsystem;
     this.visionSubsystem = visionSubsystem;
+    this.driveSubsystem = driveSubsystem;
+    // It is important that you do addRequirements(driveSubsystem, visionSubsystem) in whatever command extends this
   }
 
   @Override
@@ -54,7 +55,7 @@ public abstract class DriveCommandBase extends CommandBase {
       }
 
       // Only updates the pose estimator if the limelight pose is new and reliable
-      if (currentTimeStampSeconds > lastTimeStampSeconds && ticksAfterSeeing > LimelightConstants.FRAMES_BEFORE_ADDING_VISION_MEASUREMENT) {
+      if (currentTimeStampSeconds > lastTimeStampSeconds && ticksAfterSeeing > VisionConstants.FRAMES_BEFORE_ADDING_VISION_MEASUREMENT) {
         Pose2d limelightVisionMeasurement = visionSubsystem.getPoseFromAprilTags();
         driveSubsystem.addPoseEstimatorVisionMeasurement(limelightVisionMeasurement, Timer.getFPGATimestamp() - visionSubsystem.getLatencySeconds());
       }
