@@ -1,5 +1,4 @@
-// TigerLib 2023
-// Don't edit this unless you know what you're doing
+// TigerLib 2024
 
 import java.util.Arrays;
 
