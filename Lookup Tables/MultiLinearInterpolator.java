@@ -17,7 +17,7 @@ public final class MultiLinearInterpolator {
   /**
    * Returns multiple linearly-interpolated values from the lookup table corresponding to the given input value.
    * @return A double array containing each linearly interpolated value. It will be as long as the lookup
-   * table rows minus 1.
+   * table columns minus 1.
    */
   public double[] getLookupValue(double inputXValue) {  
     // Check if inputXValue is less than the table's first value, if it is, return the lowest y values
