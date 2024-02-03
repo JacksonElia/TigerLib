@@ -1,4 +1,6 @@
 // Tigerlib 2024
+// This class is setup for 2 limelights
+// Make sure you have the LimelightHelpers file downloaded and placed in your project https://github.com/LimelightVision/limelightlib-wpijava
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -110,7 +112,7 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     // Every periodic chooses the limelight to use based off of their distance from april tags
     // This code has the limelights alternating in updating their results every other loop.
-    // It makes sense because they run at ~12hz, where the roborio runs at 50hz.
+    // It makes sense because our limelights run at ~12hz, where the roborio runs at 50hz.
     if (wasFrontLimelightUsedLast) {
       backLimelightResults = LimelightHelpers.getLatestResults(VisionConstants.BACK_LIMELIGHT_NAME);
     } else {
