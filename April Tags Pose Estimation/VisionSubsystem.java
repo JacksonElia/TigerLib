@@ -1,5 +1,6 @@
 // Tigerlib 2024
-// This class is setup for 2 limelight, change code and constants as necessary
+// This class is setup for 2 limelight, make sure you have set their team number, static IP, and ID 
+// change code and constants as necessary
 // Make sure you have the LimelightHelpers file downloaded and placed in your project https://github.com/LimelightVision/limelightlib-wpijava
 
 import edu.wpi.first.math.geometry.Pose2d;
